@@ -6,7 +6,7 @@ DEFAULT_LIKELIHOOD = 0.01  # fallback for symptom|diagnosis not defined
 
 
 # ------------------------------------------------------------
-#  full symptom list
+#  Full symptom list
 # ------------------------------------------------------------
 SYMPTOMS = [
     # Cardiopulmonary / Vascular / Respiratory
@@ -59,7 +59,7 @@ SYMPTOMS = [
 
 
 # ------------------------------------------------------------
-# diagnosis, priors, likelihoods (need to get real values)
+# Diagnosis, priors, likelihoods (need to get real values)
 # ------------------------------------------------------------
 # Likelihoods are currently just placeholders
 
@@ -373,7 +373,7 @@ DIAGNOSES = {
 
 
 # ------------------------------------------------------------
-# naive bayes
+# Naive bayes
 # ------------------------------------------------------------
 def compute_probabilities(selected_symptoms):
     unnormalized = {}
@@ -384,7 +384,6 @@ def compute_probabilities(selected_symptoms):
         for symptom in selected_symptoms:
             value = info["likelihoods"].get(symptom, DEFAULT_LIKELIHOOD)
 
-            # NEW: convert qualitative labels to numeric values
             if isinstance(value, str):
                 value = LIKELIHOOD_MAP[value]
 
@@ -400,7 +399,7 @@ def compute_probabilities(selected_symptoms):
 
 
 # ------------------------------------------------------------
-# user input
+# User input
 # would it be better to start with a list of general symptoms?
 # ------------------------------------------------------------
 def main():
