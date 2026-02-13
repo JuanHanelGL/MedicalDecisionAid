@@ -1,0 +1,318 @@
+{
+  "diagnoses": {
+    "Acute Coronary Syndrome": {
+      "prior": 0.05,
+      "likelihoods": {
+        "chest_pain_pressure": 0.90,
+        "jaw_pain": 0.30,
+        "shortness_of_breath": 0.50,
+        "nausea": 0.30,
+        "tachycardia": 0.50,
+        "dizziness": 0.30
+      }
+    },
+
+    "Atrial Fibrillation / Atrial Flutter": {
+      "prior": 0.03,
+      "likelihoods": {
+        "palpitations": 0.70,
+        "tachycardia": 0.70,
+        "dizziness": 0.30,
+        "fatigue": 0.30,
+        "shortness_of_breath": 0.50
+      }
+    },
+
+    "Venous Thromboembolism": {
+      "prior": 0.02,
+      "likelihoods": {
+        "unilateral_leg_swelling": 0.70,
+        "calf_pain_tenderness": 0.70,
+        "sudden_onset_dyspnea": 0.50,
+        "pleuritic_cough": 0.30
+      }
+    },
+
+    "Trauma Chest Injury (blunt)": {
+      "prior": 0.01,
+      "likelihoods": {
+        "chest_pain_pleuritic": 0.50,
+        "pain_with_movement": 0.50,
+        "high_mechanism": 0.70
+      }
+    },
+
+    "Respiratory Tract Infection Lower": {
+      "prior": 0.06,
+      "likelihoods": {
+        "fever": 0.70,
+        "productive_cough": 0.70,
+        "pleuritic_cough": 0.50,
+        "fatigue": 0.50,
+        "chills": 0.30
+      }
+    },
+
+    "Trauma Severe Head": {
+      "prior": 0.01,
+      "likelihoods": {
+        "severe_headache_sudden": 0.50,
+        "decreased_loc": 0.70,
+        "amnesia_surrounding_event": 0.50,
+        "confusion": 0.30,
+        "high_mechanism": 0.70
+      }
+    },
+
+    "Headache": {
+      "prior": 0.04,
+      "likelihoods": {
+        "progressive_headache": 0.70,
+        "photophobia": 0.30,
+        "nausea": 0.30
+      }
+    },
+
+    "Headache CO2 Induced": {
+      "prior": 0.02,
+      "likelihoods": {
+        "progressive_headache": 0.50,
+        "fatigue": 0.30,
+        "dizziness": 0.30
+      }
+    },
+
+    "EVA Related Decompression Sickness": {
+      "prior": 0.01,
+      "likelihoods": {
+        "joint_pain": 0.70,
+        "skin_mottling_marbling": 0.50,
+        "neuropathy": 0.30
+      }
+    },
+
+    "EVA Related Dehydration": {
+      "prior": 0.03,
+      "likelihoods": {
+        "excessive_thirst": 0.90,
+        "dizziness": 0.50,
+        "fatigue": 0.50,
+        "decreased_urine_output": 0.70
+      }
+    },
+
+    "Gravity Well Entry Motion Sickness": {
+      "prior": 0.02,
+      "likelihoods": {
+        "nausea": 0.70,
+        "vomiting": 0.50,
+        "dizziness": 0.50
+      }
+    },
+
+    "Acute Radiation Syndrome": {
+      "prior": 0.005,
+      "likelihoods": {
+        "nausea": 0.50,
+        "vomiting": 0.50,
+        "fatigue": 0.50,
+        "skin_redness": 0.30
+      }
+    },
+
+    "Appendicitis": {
+      "prior": 0.03,
+      "likelihoods": {
+        "rlq_pain": 0.70,
+        "abdominal_tenderness": 0.70,
+        "rebound_tenderness": 0.50,
+        "anorexia": 0.30,
+        "fever": 0.30
+      }
+    },
+
+    "Cholelithiasis / Biliary Colic": {
+      "prior": 0.02,
+      "likelihoods": {
+        "ruq_pain": 0.70,
+        "epigastric_pain": 0.30,
+        "pain_radiating_to_back_midline": 0.30
+      }
+    },
+
+    "Pancreatitis, Acute": {
+      "prior": 0.01,
+      "likelihoods": {
+        "epigastric_pain": 0.70,
+        "pain_radiating_to_back_midline": 0.70,
+        "nausea": 0.50,
+        "vomiting": 0.50
+      }
+    },
+
+    "Acute Gastroenteritis / Acute Diarrhea": {
+      "prior": 0.05,
+      "likelihoods": {
+        "watery_diarrhea": 0.70,
+        "bloody_diarrhea": 0.30,
+        "abdominal_pain_diffuse": 0.50,
+        "nausea": 0.50,
+        "vomiting": 0.30
+      }
+    },
+
+    "Nephrolithiasis": {
+      "prior": 0.02,
+      "likelihoods": {
+        "flank_pain_gu": 0.70,
+        "hematuria": 0.50,
+        "nausea": 0.30
+      }
+    },
+
+    "Urinary Tract Infection": {
+      "prior": 0.04,
+      "likelihoods": {
+        "dysuria": 0.70,
+        "urinary_urgency": 0.70,
+        "urinary_frequency": 0.70,
+        "suprapubic_pain": 0.50,
+        "fever": 0.30
+      }
+    },
+
+    "Space Adaptation Urinary Retention": {
+      "prior": 0.01,
+      "likelihoods": {
+        "inability_to_urinate": 0.70,
+        "suprapubic_pain": 0.50,
+        "decreased_urine_output": 0.70
+      }
+    },
+
+    "Fracture Arm": {
+      "prior": 0.01,
+      "likelihoods": {
+        "localized_bone_pain": 0.70,
+        "deformity_of_limb": 0.70,
+        "pain_with_movement": 0.50,
+        "high_mechanism": 0.30
+      }
+    },
+
+    "Fracture Hand": {
+      "prior": 0.01,
+      "likelihoods": {
+        "localized_bone_pain": 0.70,
+        "deformity_of_limb": 0.30,
+        "pain_with_movement": 0.50
+      }
+    },
+
+    "Fracture Lower Extremity": {
+      "prior": 0.01,
+      "likelihoods": {
+        "localized_bone_pain": 0.70,
+        "deformity_of_limb": 0.70,
+        "generalized_swelling": 0.50
+      }
+    },
+
+    "Dislocation Shoulder": {
+      "prior": 0.01,
+      "likelihoods": {
+        "joint_instability": 0.70,
+        "limited_rom": 0.50,
+        "pain_with_movement": 0.50
+      }
+    },
+
+    "Sprain / Strain Neck": {
+      "prior": 0.02,
+      "likelihoods": {
+        "neck_muscle_tenderness": 0.70,
+        "pain_with_movement": 0.50
+      }
+    },
+
+    "Sprain / Strain Upper Extremity": {
+      "prior": 0.02,
+      "likelihoods": {
+        "pain_with_movement": 0.50,
+        "limited_rom": 0.30
+      }
+    },
+
+    "Tendinopathy / Enthesopathy / Bursitis": {
+      "prior": 0.02,
+      "likelihoods": {
+        "pain_worsened_with_activity": 0.70,
+        "pain_relieved_by_rest": 0.50
+      }
+    },
+
+    "Trauma Abdominal Injury (Blunt)": {
+      "prior": 0.01,
+      "likelihoods": {
+        "abdominal_pain_diffuse": 0.50,
+        "abdominal_tenderness": 0.70,
+        "abdominal_distension": 0.30,
+        "high_mechanism": 0.70
+      }
+    },
+
+    "Burn Chemical Skin": {
+      "prior": 0.005,
+      "likelihoods": {
+        "burning_skin_pain": 0.70,
+        "blistering": 0.50,
+        "skin_redness": 0.50
+      }
+    },
+
+    "Skin Infection Bacterial": {
+      "prior": 0.03,
+      "likelihoods": {
+        "skin_redness": 0.70,
+        "skin_warmth": 0.70,
+        "purulent_drainage": 0.70,
+        "foul_smelling_drainage": 0.50,
+        "fever": 0.30
+      }
+    },
+
+    "Eye Retinal Injury": {
+      "prior": 0.005,
+      "likelihoods": {
+        "vision_loss": 0.70,
+        "photopsia": 0.70,
+        "eye_pain": 0.50
+      }
+    },
+
+    "Anaphylaxis": {
+      "prior": 0.01,
+      "likelihoods": {
+        "shortness_of_breath": 0.70,
+        "itchiness": 0.70,
+        "skin_redness": 0.30
+      }
+    }
+  },
+
+  "modifiers": {
+    "age": {
+      "young": 1.0,
+      "adult": 1.1,
+      "older": 1.3
+    },
+    "sex": {
+      "male": 1.0,
+      "female": 1.05
+    }
+  },
+
+  "defaults": {
+    "absent_symptom_likelihood": 0.01
+  }
+}

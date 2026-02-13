@@ -1,0 +1,135 @@
+{
+  "symptoms": {
+    "Cardiopulmonary / Vascular / Respiratory": [
+      "chest_pain_pressure",
+      "chest_pain_pleuritic",
+      "chest_tightness",
+      "jaw_pain",
+      "shortness_of_breath",
+      "dyspnea_on_exertion",
+      "palpitations",
+      "feeling_of_impending_doom",
+      "syncope",
+      "near_syncope",
+      "tachycardia",
+      "bradycardia",
+      "cyanosis",
+      "tripoding",
+      "sudden_onset_dyspnea",
+      "unilateral_leg_swelling",
+      "bilateral_leg_swelling",
+      "calf_pain_tenderness"
+    ],
+
+    "Neurologic / Mental Status": [
+      "disorientation",
+      "confusion",
+      "decreased_loc",
+      "severe_headache_sudden",
+      "progressive_headache",
+      "dizziness",
+      "vertigo",
+      "photophobia",
+      "cranial_nerve_deficit",
+      "left_ue_weakness",
+      "right_ue_weakness",
+      "left_le_weakness",
+      "right_le_weakness",
+      "amnesia_surrounding_event"
+    ],
+
+    "Environmental / EVA-Specific": [
+      "joint_pain",
+      "skin_mottling_marbling",
+      "neuropathy",
+      "excessive_thirst",
+      "heat_intolerance",
+      "cold_intolerance"
+    ],
+
+    "Gastrointestinal / Abdominal": [
+      "abdominal_pain_diffuse",
+      "rlq_pain",
+      "ruq_pain",
+      "epigastric_pain",
+      "pain_radiating_to_back_midline",
+      "flank_pain",
+      "nausea",
+      "vomiting",
+      "food_intolerance",
+      "watery_diarrhea",
+      "bloody_diarrhea",
+      "anorexia",
+      "abdominal_tenderness",
+      "rebound_tenderness",
+      "abdominal_distension"
+    ],
+
+    "Genitourinary": [
+      "flank_pain_gu",
+      "dysuria",
+      "urinary_urgency",
+      "urinary_frequency",
+      "inability_to_urinate",
+      "decreased_urine_output",
+      "dark_colored_urine",
+      "suprapubic_pain",
+      "hematuria"
+    ],
+
+    "Musculoskeletal / Trauma": [
+      "localized_bone_pain",
+      "deformity_of_limb",
+      "generalized_swelling",
+      "limited_rom",
+      "pain_with_movement",
+      "joint_instability",
+      "neck_muscle_tenderness",
+      "midline_spinal_tenderness",
+      "joint_catching",
+      "pain_relieved_by_rest",
+      "pain_worsened_with_activity",
+      "pain_at_rest"
+    ],
+
+    "Skin / Soft Tissue / Eye": [
+      "skin_redness",
+      "skin_warmth",
+      "laceration",
+      "purulent_drainage",
+      "foul_smelling_drainage",
+      "burning_skin_pain",
+      "blistering",
+      "ulceration",
+      "itchiness",
+      "vision_loss",
+      "blurred_vision",
+      "eye_pain",
+      "photopsia"
+    ],
+
+    "Infectious / Systemic": [
+      "fever",
+      "chills",
+      "malaise",
+      "fatigue",
+      "myalgias",
+      "productive_cough",
+      "non_productive_cough",
+      "pleuritic_cough",
+      "sore_throat",
+      "inspiratory_stridor",
+      "expiratory_stridor"
+    ],
+
+    "Radiation / Hematologic / General": [
+      "easy_bruising",
+      "unexplained_bleeding"
+    ],
+
+    "Mechanism": [
+      "high_mechanism",
+      "low_mechanism"
+    ]
+  }
+}
