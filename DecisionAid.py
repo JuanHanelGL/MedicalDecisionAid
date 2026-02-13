@@ -1,432 +1,165 @@
 # ============================================================
-#  Decision aid v1
+#  Decision aid v3
 # ============================================================
 
-DEFAULT_LIKELIHOOD = 0.01  # fallback for symptom|diagnosis not defined
+import json
+
+# ============================================================
+#  LOAD JSON FILES
+# ============================================================
+
+with open("symptoms.json") as f:
+    symptom_data = json.load(f)
+
+with open("diagnosis.json") as f:
+    diagnosis_data = json.load(f)
+
+# Symptom categories and flat list
+SYMPTOM_CATEGORIES = symptom_data["symptoms"]
+
+SYMPTOMS = []
+for category, items in SYMPTOM_CATEGORIES.items():
+    SYMPTOMS.extend(items)
+
+DIAGNOSES = diagnosis_data["diagnoses"]
+MODIFIERS = diagnosis_data.get("modifiers", {})
+DEFAULTS = diagnosis_data.get("defaults", {})
+
+DEFAULT_ABSENT_LIKELIHOOD = DEFAULTS.get("absent_symptom_likelihood", 0.01)
 
 
-# ------------------------------------------------------------
-#  Full symptom list
-# ------------------------------------------------------------
-SYMPTOMS = [
-    # Cardiopulmonary / Vascular / Respiratory
-    "chest_pain_pressure", "chest_pain_pleuritic", "chest_tightness", "jaw_pain",
-    "shortness_of_breath", "dyspnea_on_exertion", "palpitations",
-    "feeling_of_impending_doom", "syncope", "near_syncope", "tachycardia",
-    "bradycardia", "cyanosis", "tripoding", "sudden_onset_dyspnea",
-    "unilateral_leg_swelling", "bilateral_leg_swelling", "calf_pain_tenderness",
+# ============================================================
+#  FULL NAIVE BAYES ENGINE
+# ============================================================
 
-    # Neurologic / Mental Status
-    "disorientation", "confusion", "decreased_loc", "severe_headache_sudden",
-    "progressive_headache", "dizziness", "vertigo", "photophobia",
-    "cranial_nerve_deficit", "left_ue_weakness", "right_ue_weakness",
-    "left_le_weakness", "right_le_weakness", "amnesia_surrounding_event",
+def compute_posterior(selected_symptoms, age_group, sex):
+    selected = set(selected_symptoms)
+    all_symptoms = set(SYMPTOMS)
+    absent = all_symptoms - selected
 
-    # Environmental / EVA-Specific
-    "joint_pain", "skin_mottling_marbling", "neuropathy", "excessive_thirst",
-    "heat_intolerance", "cold_intolerance",
-
-    # Gastrointestinal / Abdominal
-    "abdominal_pain_diffuse", "rlq_pain", "ruq_pain", "epigastric_pain",
-    "pain_radiating_to_back_midline", "flank_pain", "nausea", "vomiting",
-    "food_intolerance", "watery_diarrhea", "bloody_diarrhea", "anorexia",
-    "abdominal_tenderness", "rebound_tenderness", "abdominal_distension",
-
-    # Genitourinary
-    "flank_pain_gu", "dysuria", "urinary_urgency", "urinary_frequency",
-    "inability_to_urinate", "decreased_urine_output", "dark_colored_urine",
-    "suprapubic_pain", "hematuria",
-
-    # Musculoskeletal / Trauma
-    "localized_bone_pain", "deformity_of_limb", "generalized_swelling",
-    "limited_rom", "pain_with_movement", "joint_instability",
-    "neck_muscle_tenderness", "midline_spinal_tenderness", "joint_catching",
-    "pain_relieved_by_rest", "pain_worsened_with_activity", "pain_at_rest",
-
-    # Skin / Soft Tissue / Eye
-    "skin_redness", "skin_warmth", "laceration", "purulent_drainage",
-    "foul_smelling_drainage", "burning_skin_pain", "blistering", "ulceration",
-    "itchiness", "vision_loss", "blurred_vision", "eye_pain", "photopsia",
-
-    # Infectious / Systemic
-    "fever", "chills", "malaise", "fatigue", "myalgias", "productive_cough",
-    "non_productive_cough", "pleuritic_cough", "sore_throat",
-    "inspiratory_stridor", "expiratory_stridor",
-
-    # Radiation / Hematologic / General
-    "easy_bruising", "unexplained_bleeding",
-]
-
-
-# ------------------------------------------------------------
-# Diagnosis, priors, likelihoods (need to get real values)
-# ------------------------------------------------------------
-# Likelihoods are currently just placeholders
-
-LIKELIHOOD_MAP = {
-    "always": 0.9,
-    "usually": 0.7,
-    "sometimes": 0.5,
-    "might": 0.3,
-}
-
-DIAGNOSES = {
-    "Acute Coronary Syndrome": {
-        "prior": 0.05,
-        "likelihoods": {
-            "chest_pain_pressure": "always",
-            "jaw_pain": "might",
-            "shortness_of_breath": "sometimes",
-            "nausea": "might",
-            "tachycardia": "sometimes",
-            "dizziness": "might",
-        },
-    },
-
-    "Atrial Fibrillation / Atrial Flutter": {
-        "prior": 0.03,
-        "likelihoods": {
-            "palpitations": "usually",
-            "tachycardia": "usually",
-            "dizziness": "might",
-            "fatigue": "might",
-            "shortness_of_breath": "sometimes",
-        },
-    },
-
-    "Venous Thromboembolism": {
-        "prior": 0.02,
-        "likelihoods": {
-            "unilateral_leg_swelling": "usually",
-            "calf_pain_tenderness": "usually",
-            "sudden_onset_dyspnea": "sometimes",
-            "pleuritic_cough": "might",
-        },
-    },
-
-    "Trauma - Chest Injury (blunt)": {
-        "prior": 0.01,
-        "likelihoods": {
-            "chest_pain_pleuritic": "sometimes",
-            "pain_with_movement": "sometimes",
-            "high_mechanism": "usually",
-        },
-    },
-
-    "Respiratory Tract Infection – Lower": {
-        "prior": 0.06,
-        "likelihoods": {
-            "fever": "usually",
-            "productive_cough": "usually",
-            "pleuritic_cough": "sometimes",
-            "fatigue": "sometimes",
-            "chills": "might",
-        },
-    },
-
-    "Trauma – Severe Head": {
-        "prior": 0.01,
-        "likelihoods": {
-            "severe_headache_sudden": "sometimes",
-            "decreased_loc": "usually",
-            "amnesia_surrounding_event": "sometimes",
-            "confusion": "might",
-            "high_mechanism": "usually",
-        },
-    },
-
-    "Headache": {
-        "prior": 0.04,
-        "likelihoods": {
-            "progressive_headache": "usually",
-            "photophobia": "might",
-            "nausea": "might",
-        },
-    },
-
-    "Headache – CO2 Induced": {
-        "prior": 0.02,
-        "likelihoods": {
-            "progressive_headache": "sometimes",
-            "fatigue": "might",
-            "dizziness": "might",
-        },
-    },
-
-    "EVA Related Decompression Sickness": {
-        "prior": 0.01,
-        "likelihoods": {
-            "joint_pain": "usually",
-            "skin_mottling_marbling": "sometimes",
-            "neuropathy": "might",
-        },
-    },
-
-    "EVA Related Dehydration": {
-        "prior": 0.03,
-        "likelihoods": {
-            "excessive_thirst": "always",
-            "dizziness": "sometimes",
-            "fatigue": "sometimes",
-            "decreased_urine_output": "usually",
-        },
-    },
-
-    "Gravity Well – Entry Motion Sickness": {
-        "prior": 0.02,
-        "likelihoods": {
-            "nausea": "usually",
-            "vomiting": "sometimes",
-            "dizziness": "sometimes",
-        },
-    },
-
-    "Acute Radiation Syndrome": {
-        "prior": 0.005,
-        "likelihoods": {
-            "nausea": "sometimes",
-            "vomiting": "sometimes",
-            "fatigue": "sometimes",
-            "skin_redness": "might",
-        },
-    },
-
-    "Appendicitis": {
-        "prior": 0.03,
-        "likelihoods": {
-            "rlq_pain": "usually",
-            "abdominal_tenderness": "usually",
-            "rebound_tenderness": "sometimes",
-            "anorexia": "might",
-            "fever": "might",
-        },
-    },
-
-    "Cholelithiasis / Biliary Colic": {
-        "prior": 0.02,
-        "likelihoods": {
-            "ruq_pain": "usually",
-            "epigastric_pain": "might",
-            "pain_radiating_to_back_midline": "might",
-        },
-    },
-
-    "Pancreatitis, Acute": {
-        "prior": 0.01,
-        "likelihoods": {
-            "epigastric_pain": "usually",
-            "pain_radiating_to_back_midline": "usually",
-            "nausea": "sometimes",
-            "vomiting": "sometimes",
-        },
-    },
-
-    "Acute Gastroenteritis / Acute Diarrhea": {
-        "prior": 0.05,
-        "likelihoods": {
-            "watery_diarrhea": "usually",
-            "bloody_diarrhea": "might",
-            "abdominal_pain_diffuse": "sometimes",
-            "nausea": "sometimes",
-            "vomiting": "might",
-        },
-    },
-
-    "Nephrolithiasis": {
-        "prior": 0.02,
-        "likelihoods": {
-            "flank_pain_gu": "usually",
-            "hematuria": "sometimes",
-            "nausea": "might",
-        },
-    },
-
-    "Urinary Tract Infection": {
-        "prior": 0.04,
-        "likelihoods": {
-            "dysuria": "usually",
-            "urinary_urgency": "usually",
-            "urinary_frequency": "usually",
-            "suprapubic_pain": "sometimes",
-            "fever": "might",
-        },
-    },
-
-    "Space Adaptation – Urinary Retention": {
-        "prior": 0.01,
-        "likelihoods": {
-            "inability_to_urinate": "usually",
-            "suprapubic_pain": "sometimes",
-            "decreased_urine_output": "usually",
-        },
-    },
-
-    "Fracture – Arm": {
-        "prior": 0.01,
-        "likelihoods": {
-            "localized_bone_pain": "usually",
-            "deformity_of_limb": "usually",
-            "pain_with_movement": "sometimes",
-            "high_mechanism": "might",
-        },
-    },
-
-    "Fracture – Hand": {
-        "prior": 0.01,
-        "likelihoods": {
-            "localized_bone_pain": "usually",
-            "deformity_of_limb": "might",
-            "pain_with_movement": "sometimes",
-        },
-    },
-
-    "Fracture – Lower Extremity": {
-        "prior": 0.01,
-        "likelihoods": {
-            "localized_bone_pain": "usually",
-            "deformity_of_limb": "usually",
-            "generalized_swelling": "sometimes",
-        },
-    },
-
-    "Dislocation – Shoulder": {
-        "prior": 0.01,
-        "likelihoods": {
-            "joint_instability": "usually",
-            "limited_rom": "sometimes",
-            "pain_with_movement": "sometimes",
-        },
-    },
-
-    "Sprain / Strain – Neck": {
-        "prior": 0.02,
-        "likelihoods": {
-            "neck_muscle_tenderness": "usually",
-            "pain_with_movement": "sometimes",
-        },
-    },
-
-    "Sprain / Strain – Upper Extremity": {
-        "prior": 0.02,
-        "likelihoods": {
-            "pain_with_movement": "sometimes",
-            "limited_rom": "might",
-        },
-    },
-
-    "Tendinopathy / Enthesopathy / Bursitis": {
-        "prior": 0.02,
-        "likelihoods": {
-            "pain_worsened_with_activity": "usually",
-            "pain_relieved_by_rest": "sometimes",
-        },
-    },
-
-    "Trauma – Abdominal Injury (Blunt)": {
-        "prior": 0.01,
-        "likelihoods": {
-            "abdominal_pain_diffuse": "sometimes",
-            "abdominal_tenderness": "usually",
-            "abdominal_distension": "might",
-            "high_mechanism": "usually",
-        },
-    },
-
-    "Burn – Chemical Skin": {
-        "prior": 0.005,
-        "likelihoods": {
-            "burning_skin_pain": "usually",
-            "blistering": "sometimes",
-            "skin_redness": "sometimes",
-        },
-    },
-
-    "Skin Infection – Bacterial": {
-        "prior": 0.03,
-        "likelihoods": {
-            "skin_redness": "usually",
-            "skin_warmth": "usually",
-            "purulent_drainage": "usually",
-            "foul_smelling_drainage": "sometimes",
-            "fever": "might",
-        },
-    },
-
-    "Eye – Retinal Injury": {
-        "prior": 0.005,
-        "likelihoods": {
-            "vision_loss": "usually",
-            "photopsia": "usually",
-            "eye_pain": "sometimes",
-        },
-    },
-
-    "Anaphylaxis": {
-        "prior": 0.01,
-        "likelihoods": {
-            "shortness_of_breath": "usually",
-            "itchiness": "usually",
-            "skin_redness": "might",
-        },
-    },
-}
-
-
-# ------------------------------------------------------------
-# Naive bayes
-# ------------------------------------------------------------
-def compute_probabilities(selected_symptoms):
     unnormalized = {}
 
     for diagnosis, info in DIAGNOSES.items():
-        prob = info["prior"]
+        prior = info["prior"]
 
-        for symptom in selected_symptoms:
-            value = info["likelihoods"].get(symptom, DEFAULT_LIKELIHOOD)
+        # Apply age/sex modifiers
+        prior *= MODIFIERS.get("age", {}).get(age_group, 1.0)
+        prior *= MODIFIERS.get("sex", {}).get(sex, 1.0)
 
-            if isinstance(value, str):
-                value = LIKELIHOOD_MAP[value]
+        likelihoods = info["likelihoods"]
 
-            prob *= value
+        prob = prior
+
+        # Present symptoms
+        for s in selected:
+            p = likelihoods.get(s, DEFAULT_ABSENT_LIKELIHOOD)
+            prob *= p
+
+        # Absent symptoms
+        for s in absent:
+            p = likelihoods.get(s, DEFAULT_ABSENT_LIKELIHOOD)
+            prob *= (1 - p)
 
         unnormalized[diagnosis] = prob
 
     total = sum(unnormalized.values())
     if total == 0:
-        return {d: info["prior"] for d, info in DIAGNOSES.items()}
+        return {d: 0.0 for d in unnormalized}
 
     return {d: p / total for d, p in unnormalized.items()}
 
 
-# ------------------------------------------------------------
-# User input
-# would it be better to start with a list of general symptoms?
-# ------------------------------------------------------------
+# ============================================================
+#  CATEGORY-DRIVEN SYMPTOM SELECTION (Version 2 UI)
+# ============================================================
+
+def choose_symptoms():
+    selected = []
+
+    while True:
+        print("\nSelect a symptom category:")
+        categories = list(SYMPTOM_CATEGORIES.keys())
+
+        for i, cat in enumerate(categories, 1):
+            print(f"{i}. {cat}")
+
+        print(f"{len(categories)+1}. Done selecting symptoms")
+
+        choice = input("> ").strip()
+
+        if not choice.isdigit():
+            print("Invalid input.")
+            continue
+
+        choice = int(choice)
+
+        if choice == len(categories) + 1:
+            break
+
+        if choice < 1 or choice > len(categories):
+            print("Invalid category.")
+            continue
+
+        category = categories[choice - 1]
+        symptoms = SYMPTOM_CATEGORIES[category]
+
+        print(f"\nSelect a symptom from {category}:")
+        for i, s in enumerate(symptoms, 1):
+            print(f"{i}. {s}")
+
+        symptom_choice = input("> ").strip()
+
+        if not symptom_choice.isdigit():
+            print("Invalid input.")
+            continue
+
+        symptom_choice = int(symptom_choice)
+
+        if symptom_choice < 1 or symptom_choice > len(symptoms):
+            print("Invalid symptom.")
+            continue
+
+        selected_symptom = symptoms[symptom_choice - 1]
+        selected.append(selected_symptom)
+
+        print(f"Added: {selected_symptom}")
+
+    return selected
+
+
+# ============================================================
+#  USER INTERFACE
+# ============================================================
+
 def main():
-    print("Enter symptoms separated by commas (e.g., fever, dizziness):")
-    # for testing purposes, will be changed to app UI
-    user_input = input("> ")
+    print("=== Symptom Selection ===")
+    selected = choose_symptoms()
 
-    raw = [s.strip() for s in user_input.split(",") if s.strip()]
-    selected = [s.lower().replace(" ", "_") for s in raw]
+    print("\nSelected symptoms:", selected)
 
-    valid = [s for s in selected if s in SYMPTOMS]
-    invalid = [s for s in selected if s not in SYMPTOMS]
+    # Age group
+    print("\nSelect age group (young, adult, older):")
+    age_group = input("> ").strip().lower()
+    if age_group not in MODIFIERS.get("age", {}):
+        print("Invalid age group. Defaulting to 'adult'.")
+        age_group = "adult"
 
-    if invalid:
-        print("\nUnrecognized symptoms (ignored):", invalid)
+    # Sex
+    print("\nSelect sex (male, female):")
+    sex = input("> ").strip().lower()
+    if sex not in MODIFIERS.get("sex", {}):
+        print("Invalid sex. Defaulting to 'male'.")
+        sex = "male"
 
-    if not valid:
-        print("\nNo valid symptoms entered. Using priors only.")
+    # Compute posterior
+    probs = compute_posterior(selected, age_group, sex)
 
-    print("\nUsing symptoms:", valid)
-
-    probs = compute_probabilities(valid)
     sorted_probs = sorted(probs.items(), key=lambda x: x[1], reverse=True)
+    top5 = sorted_probs[:5]
 
-    print("\nDiagnosis probabilities:")
-    for diag, p in sorted_probs:
-        print(f"{diag}: {p*100:.1f}%")
+    print("\nTop 5 diagnosis probabilities:")
+    for diag, p in top5:
+        print(f"{diag}: {p*100:.2f}%")
 
 
 if __name__ == "__main__":
